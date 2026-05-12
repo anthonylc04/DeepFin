@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Species Classifier</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: #0f1923;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .card {
+            background: #1a2634;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #7eb8f7;
+        }
+
+        a.stats-link {
+            font-size: 0.85rem;
+            color: #8a9bb0;
+            text-decoration: none;
+        }
+
+        a.stats-link:hover {
+            color: #7eb8f7;
+        }
+
+        .upload-area {
+            border: 2px dashed #2e4a6a;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area:hover {
+            border-color: #7eb8f7;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-label {
+            display: block;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #8a9bb0;
+        }
+
+        #preview {
+            width: 100%;
+            max-height: 240px;
+            object-fit: contain;
+            border-radius: 6px;
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        .threshold-wrap {
+            margin-bottom: 1rem;
+            background: #0f1923;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+        .threshold-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #8a9bb0;
+        }
+
+        #thresholdVal {
+            color: #7eb8f7;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #2563eb;
+            cursor: pointer;
+        }
+
+        .threshold-hint {
+            font-size: 0.75rem;
+            color: #4a6080;
+            margin-top: 0.4rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #2e4a6a;
+            cursor: not-allowed;
+        }
+
+        #results {
+            margin-top: 1.5rem;
+        }
+
+        .rejected-banner {
+            background: #3b1515;
+            border: 1px solid #f87171;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .rejected-banner .icon {
+            font-size: 1.5rem;
+        }
+
+        .rejected-banner .title {
+            font-weight: 600;
+            color: #f87171;
+            margin: 0.25rem 0;
+        }
+
+        .rejected-banner .subtitle {
+            font-size: 0.8rem;
+            color: #8a9bb0;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #0f1923;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-item.top {
+            border: 1px solid #2563eb;
+        }
+
+        .result-item.top.uncertain {
+            border-color: #f87171;
+            opacity: 0.7;
+        }
+
+        .species {
+            font-weight: 500;
+        }
+
+        .confidence {
+            color: #7eb8f7;
+            font-size: 0.9rem;
+        }
+
+        .bar-wrap {
+            height: 4px;
+            background: #2e4a6a;
+            border-radius: 2px;
+            margin-top: 0.4rem;
+        }
+
+        .bar {
+            height: 4px;
+            background: #2563eb;
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        .bar.low {
+            background: #f87171;
+        }
+
+        .also-label {
+            font-size: 0.75rem;
+            color: #4a6080;
+            margin-bottom: 0.4rem;
+            margin-top: 0.25rem;
+        }
+
+        #status {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8a9bb0;
+            margin-top: 0.75rem;
+        }
+
+        .error {
+            color: #f87171;
+        }
+
+        .submit-wrap {
+            margin-top: 1rem;
+            background: #0f1923;
+            border-radius: 8px;
+            padding: 1rem;
+            display: none;
+        }
+
+        .submit-wrap h3 {
+            font-size: 0.85rem;
+            color: #8a9bb0;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .species-select {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            background: #1a2634;
+            border: 1px solid #2e4a6a;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+        }
+
+        .species-select:focus {
+            outline: none;
+            border-color: #7eb8f7;
+        }
+
+        .submit-btn {
+            background: #16a34a;
+            font-size: 0.9rem;
+            padding: 0.6rem;
+        }
+
+        .submit-btn:hover {
+            background: #15803d;
+        }
+
+        .submit-btn:disabled {
+            background: #2e4a6a;
+        }
+
+        .submit-success {
+            text-align: center;
+            color: #22c55e;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .submit-error {
+            text-align: center;
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="header">
+            <h1>Fish Species Classifier</h1>
+            <a class="stats-link" href="/stats">Stats</a>
+        </div>
+
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <label class="upload-label">
+                <input type="file" id="fileInput" accept="image/*">
+                Click to upload a fish image
+            </label>
+        </div>
+
+        <img id="preview" alt="Preview">
+
+        <div class="threshold-wrap">
+            <div class="threshold-header">
+                <span>Confidence Threshold</span>
+                <span id="thresholdVal">40%</span>
+            </div>
+            <input type="range" id="threshold" min="10" max="90" value="40" step="5"
+                oninput="document.getElementById('thresholdVal').textContent = this.value + '%'">
+            <div class="threshold-hint">
+                Predictions below this confidence will be rejected as unknown
+            </div>
+        </div>
+
+        <button id="submitBtn" disabled onclick="submitImage()">Classify</button>
+
+        <div id="status"></div>
+        <div id="results"></div>
+
+        <div class="submit-wrap" id="submitWrap">
+            <h3>Submit for Training</h3>
+            <p style="font-size:0.8rem; color:#4a6080; margin-bottom:0.75rem;">
+                Help improve the model by submitting this image. Confirm or correct the species below.
+            </p>
+            <select class="species-select" id="speciesSelect">
+                <option value="">— Select species —</option>
+                {% for name in class_names %}
+                <option value="{{ name }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+            <button class="submit-btn" id="trainingBtn" onclick="submitForTraining()">
+                Submit Image for Training
+            </button>
+            <div id="submitStatus"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const fileInput = document.getElementById("fileInput");
+        const preview = document.getElementById("preview");
+        const submitBtn = document.getElementById("submitBtn");
+        const status = document.getElementById("status");
+        const results = document.getElementById("results");
+
+        // These must be grabbed after the DOM is ready
+        let submitWrap, speciesSelect, submitStatus;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            submitWrap = document.getElementById("submitWrap");
+            speciesSelect = document.getElementById("speciesSelect");
+            submitStatus = document.getElementById("submitStatus");
+        });
+
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+            submitBtn.disabled = false;
+            results.innerHTML = "";
+            status.textContent = "";
+            if (submitWrap) submitWrap.style.display = "none";
+            if (submitStatus) submitStatus.textContent = "";
+        });
+
+        async function submitImage() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            submitBtn.disabled = true;
+            status.textContent = "Classifying...";
+            results.innerHTML = "";
+            submitWrap.style.display = "none";
+
+            const threshold = document.getElementById("threshold").value;
+            const formData = new FormData();
+            formData.append("image", file);
+            formData.append("threshold", (threshold / 100).toFixed(2));
+
+            try {
+                const response = await fetch("/predict", { method: "POST", body: formData });
+                const data = await response.json();
+
+                if (data.error) {
+                    status.innerHTML = `<span class="error">${data.error}</span>`;
+                    return;
+                }
+
+                status.textContent = "";
+                let html = "";
+
+                if (data.rejected) {
+                    html += `
+                <div class="rejected-banner">
+                  <div class="icon">❓</div>
+                  <div class="title">Unknown Fish</div>
+                  <div class="subtitle">
+                    Top confidence (${data.results[0].confidence}) is below your
+                    threshold (${data.threshold}).<br>
+                    The model is not confident enough to make a prediction.
+                  </div>
+                </div>
+                <div class="also-label">Best guesses anyway:</div>
+              `;
+                }
+
+                html += data.results.map((r, i) => `
+              <div class="result-item ${i === 0 ? "top" : ""}
+                   ${i === 0 && data.rejected ? "uncertain" : ""}">
+                <div style="flex:1">
+                  <div style="display:flex; justify-content:space-between">
+                    <span class="species">
+                      ${i === 0 && !data.rejected ? "🏆 " : ""}${r.species}
+                    </span>
+                    <span class="confidence">${r.confidence}</span>
+                  </div>
+                  <div class="bar-wrap">
+                    <div class="bar ${i === 0 && data.rejected ? "low" : ""}"
+                         style="width:${r.confidence_val}%"></div>
+                  </div>
+                </div>
+              </div>
+            `).join("");
+
+                results.innerHTML = html;
+
+                // Pre-select the top predicted species in the dropdown
+                if (data.results.length > 0) {
+                    speciesSelect.value = data.results[0].species;
+                }
+                submitWrap.style.display = "block";
+
+            } catch (err) {
+                status.innerHTML = `<span class="error">Something went wrong.</span>`;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function submitForTraining() {
+            const file = fileInput.files[0];
+            const species = speciesSelect.value;
+            if (!file || !species) return;
+
+            const trainingBtn = document.getElementById("trainingBtn");
+            trainingBtn.disabled = true;
+            submitStatus.textContent = "";
+
+            const formData = new FormData();
+            formData.append("image", file);
+            formData.append("species", species);
+
+            try {
+                const response = await fetch("/submit", { method: "POST", body: formData });
+                const data = await response.json();
+
+                if (data.error) {
+                    submitStatus.innerHTML = `<span class="submit-error">${data.error}</span>`;
+                    trainingBtn.disabled = false;
+                    return;
+                }
+
+                submitStatus.innerHTML = `<div class="submit-success">✓ ${data.message}</div>`;
+                trainingBtn.textContent = "Submitted ✓";
+
+            } catch (err) {
+                submitStatus.innerHTML = `<span class="submit-error">Submission failed.</span>`;
+                trainingBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

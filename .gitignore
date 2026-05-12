@@ -1,0 +1,14 @@
+# Dataset
+fish-detection-data/
+fish-species-image-data.zip
+
+# Pending user submissions
+pending/
+
+# Junk files
+stuff.txt
+thing.py
+token.txt
+__pycache__/
+*.pyc
+.env

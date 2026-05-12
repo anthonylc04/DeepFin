@@ -1,0 +1,73 @@
+{
+  "accuracy": 0.9771,
+  "num_species": 13,
+  "num_train_images": 7542,
+  "num_test_images": 700,
+  "per_class": [
+    {
+      "name": "AngelFish",
+      "train_images": 416,
+      "test_images": 161
+    },
+    {
+      "name": "BlueTang",
+      "train_images": 823,
+      "test_images": 82
+    },
+    {
+      "name": "ButterflyFish",
+      "train_images": 364,
+      "test_images": 8
+    },
+    {
+      "name": "ClownFish",
+      "train_images": 538,
+      "test_images": 89
+    },
+    {
+      "name": "GoldFish",
+      "train_images": 480,
+      "test_images": 42
+    },
+    {
+      "name": "Gourami",
+      "train_images": 1488,
+      "test_images": 94
+    },
+    {
+      "name": "MorishIdol",
+      "train_images": 261,
+      "test_images": 7
+    },
+    {
+      "name": "PlatyFish",
+      "train_images": 518,
+      "test_images": 30
+    },
+    {
+      "name": "RibbonedSweetlips",
+      "train_images": 256,
+      "test_images": 7
+    },
+    {
+      "name": "ThreeStripedDamselfish",
+      "train_images": 629,
+      "test_images": 39
+    },
+    {
+      "name": "YellowCichlid",
+      "train_images": 198,
+      "test_images": 14
+    },
+    {
+      "name": "YellowTang",
+      "train_images": 259,
+      "test_images": 48
+    },
+    {
+      "name": "ZebraFish",
+      "train_images": 1312,
+      "test_images": 79
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Stats</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: #0f1923;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #7eb8f7;
+            margin-bottom: 1.5rem;
+        }
+
+        a.back {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #7eb8f7;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        a.back:hover {
+            text-decoration: underline;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: #1a2634;
+            border-radius: 10px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #7eb8f7;
+        }
+
+        .summary-card .label {
+            font-size: 0.8rem;
+            color: #8a9bb0;
+            margin-top: 0.25rem;
+        }
+
+        .accuracy-card {
+            background: #1a2634;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .accuracy-card .value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .accuracy-card .label {
+            font-size: 0.9rem;
+            color: #8a9bb0;
+            margin-top: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1rem;
+            color: #8a9bb0;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .species-table {
+            background: #1a2634;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #8a9bb0;
+            text-transform: uppercase;
+            border-bottom: 1px solid #2e4a6a;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #0f1923;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .bar-wrap {
+            height: 6px;
+            background: #2e4a6a;
+            border-radius: 3px;
+            margin-top: 0.3rem;
+        }
+
+        .bar {
+            height: 6px;
+            background: #2563eb;
+            border-radius: 3px;
+        }
+
+        .no-stats {
+            text-align: center;
+            color: #8a9bb0;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a class="back" href="/">← Back to Classifier</a>
+        <h1>Model Statistics</h1>
+
+        {% if stats is none %}
+        <div class="no-stats">
+            <p>No stats found. Train the model first to generate statistics.</p>
+        </div>
+
+        {% else %}
+        <div class="accuracy-card">
+            <div class="value">{{ (stats.accuracy * 100) | round(1) }}%</div>
+            <div class="label">Test Accuracy</div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="value">{{ stats.num_species }}</div>
+                <div class="label">Species</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">{{ stats.num_train_images }}</div>
+                <div class="label">Training Images</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">{{ stats.num_test_images }}</div>
+                <div class="label">Test Images</div>
+            </div>
+        </div>
+
+        <h2>Per Species Breakdown</h2>
+        <div class="species-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Species</th>
+                        <th>Train</th>
+                        <th>Test</th>
+                        <th>Training Share</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set max_train = stats.per_class | map(attribute='train_images') | max %}
+                    {% for cls in stats.per_class %}
+                    <tr>
+                        <td>{{ cls.name }}</td>
+                        <td>{{ cls.train_images }}</td>
+                        <td>{{ cls.test_images }}</td>
+                        <td style="width: 35%">
+                            <div class="bar-wrap">
+                                <div class="bar" style="width: {{ ((cls.train_images / max_train) * 100) | round }}%">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
