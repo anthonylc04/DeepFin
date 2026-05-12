@@ -45,6 +45,14 @@ DeepFin/
 
 ---
 
+## Notes
+
+- `fish_model.joblib` is included in this repository so you can run the web
+  app immediately without training/retraining by using the pre-existing model file.
+- The web app must be run locally — it is not deployed to any server.
+- A GPU is not required but will significantly speed up feature extraction
+  if available.
+
 ## Dataset Setup
 
 1. Download the dataset from Roboflow:
@@ -123,11 +131,3 @@ python fish_train_classifier.py --data-yaml "fish-detection-data/data.yaml"
 ```
 
 ---
-
-## Notes
-
-- `fish_model.joblib` is included in this repository so you can run the web
-  app immediately without retraining.
-- The web app must be run locally — it is not deployed to any server.
-- A GPU is not required but will significantly speed up feature extraction
-  if available.
