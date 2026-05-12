@@ -1,5 +1,10 @@
 # DeepFin — Transfer Learning for Aquatic Species Recognition
 
+Deliverables:
+Web Page: https://sites.google.com/vt.edu/deepfin/home
+Final Report: https://docs.google.com/document/d/1N0d35EyeWF8i40eLc0By99kTbvrmBFPVATbY1zhSmzI/edit?usp=sharing
+Presentation Slides: https://docs.google.com/presentation/d/1zs3XrjY1wT8PjzqLe-EC__OxBi_Q97Hn98Qhz9Nt6EQ/edit?usp=sharing
+
 A fish species classification system that uses a pretrained ResNet50 CNN as a 
 feature extractor and a Support Vector Machine classifier to identify 13 species 
 of fish from a single photograph. Includes a lightweight local web interface with 
